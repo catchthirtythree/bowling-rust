@@ -8,17 +8,12 @@ fn main() {
     let mut rolls: Vec<i32> = vec![];
 
     // Roll for 10 frames
-    for _ in 1..=MAX_FRAMES_PER_GAME {
-        // Get the current frame number so we can use it for applying
-        // the proper rules to the frame (ie: the last frame + bonus rolls).
-        let frame_number: i32 = get_current_frame_number(&rolls);
-
+    for frame_number in 1..=MAX_FRAMES_PER_GAME {
         // Roll for a frame and get the score(s)
         let mut frame_roll_scores: Vec<i32> = roll_frame(frame_number);
 
         // Display the frame stats.
-        println!("Frame: {}, Rolls: {:?}",
-            get_current_frame_number(&rolls), frame_roll_scores);
+        println!("Frame: {}, Rolls: {:?}", frame_number, frame_roll_scores);
 
         // Append the frame roll score(s) to the list of rolls
         rolls.append(&mut frame_roll_scores);
