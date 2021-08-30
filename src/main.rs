@@ -30,7 +30,7 @@ fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
 
     println!("Calculating score for: {:?}", rolls);
 
-    for current_frame in 0..=MAX_FRAMES_PER_GAME {
+    for current_frame in 1..=MAX_FRAMES_PER_GAME {
         if current_frame == MAX_FRAMES_PER_GAME {
             current_score += calculate_score_last_frame(rolls);
         } else {
@@ -189,9 +189,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_calculate_score() {
+    fn test_calculate_score_120_game() {
         let rolls = [10, 7, 3, 2, 1, 7, 3, 4, 6, 2, 6, 0, 10, 8, 0, 4, 1, 10, 9, 1];
 
         assert_eq!(calculate_score(&mut VecDeque::from_iter(rolls)), 120);
+    }
+
+    #[test]
+    fn test_calculate_score_perfect_game() {
+        let rolls = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+
+        assert_eq!(calculate_score(&mut VecDeque::from_iter(rolls)), 300);
     }
 }
