@@ -13,22 +13,22 @@ fn main() {
     // Roll for 10 frames
     for frame_number in 1..=MAX_FRAMES_PER_GAME {
         // Roll for a frame and get the score(s)
-        let mut frame_roll_scores: Vec<i32> = roll_frame(frame_number);
-
-        // Display the frame stats
-        println!("Frame: {}, Rolls: {:?}", frame_number, frame_roll_scores);
+        let frame_roll_scores: Vec<i32> = roll_frame(frame_number);
 
         // Append the frame roll score(s) to the list of rolls
-        rolls.append(&mut frame_roll_scores);
-    }
+        rolls.append(&mut frame_roll_scores.clone());
 
-    println!("Final Score: {}", calculate_score(&mut VecDeque::from_iter(rolls.clone())));
+        // Get the current score for the player
+        let current_score = calculate_score(&mut VecDeque::from_iter(rolls.clone()));
+
+        // Display the frame stats
+        println!("Frame: {:2}, Rolls: {:2?}, Score: {}",
+            frame_number, frame_roll_scores, current_score);
+    }
 }
 
 fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
     let mut current_score: i32 = 0;
-
-    println!("Calculating score for: {:?}", rolls);
 
     for current_frame in 1..=MAX_FRAMES_PER_GAME {
         if current_frame == MAX_FRAMES_PER_GAME {
