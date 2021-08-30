@@ -1,7 +1,10 @@
 use rand::Rng;
+use std::collections::VecDeque;
+use std::iter::FromIterator;
 
 const MAX_FRAMES_PER_GAME: i32 = 10;
 const MAX_ROLL_SCORE: i32 = 10;
+const MIN_ROLL_SCORE: i32 = 0;
 
 fn main() {
     // The rolls of a single player in a game
@@ -12,33 +15,99 @@ fn main() {
         // Roll for a frame and get the score(s)
         let mut frame_roll_scores: Vec<i32> = roll_frame(frame_number);
 
-        // Display the frame stats.
+        // Display the frame stats
         println!("Frame: {}, Rolls: {:?}", frame_number, frame_roll_scores);
 
         // Append the frame roll score(s) to the list of rolls
         rolls.append(&mut frame_roll_scores);
     }
+
+    println!("Final Score: {}", calculate_score(&mut VecDeque::from_iter(rolls.clone())));
 }
 
-fn get_current_frame_number(rolls: &Vec<i32>) -> i32 {
-    let mut frame_number: i32 = 1;
-    let mut roll_number: i32 = 1;
+fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
+    let mut current_score: i32 = 0;
 
-    for roll in rolls {
-        if *roll == MAX_ROLL_SCORE || roll_number == 2 {
-            frame_number += 1;
-            roll_number = 1;
+    println!("Calculating score for: {:?}", rolls);
+
+    for current_frame in 0..=MAX_FRAMES_PER_GAME {
+        if current_frame == MAX_FRAMES_PER_GAME {
+            current_score += calculate_score_last_frame(rolls);
         } else {
-            roll_number += 1;
+            current_score += calculate_score_regular_frame(rolls);
         }
     }
 
-    frame_number
+    current_score
+}
+
+fn calculate_score_last_frame(rolls: &mut VecDeque<i32>) -> i32 {
+    let mut frame_score: i32 = 0;
+
+    if let Some(roll1) = rolls.pop_front() {
+        frame_score += roll1;
+
+        if roll1 == MAX_ROLL_SCORE {
+            if let Some(b1) = rolls.get(0) {
+                frame_score += b1;
+            }
+
+            if let Some(b2) = rolls.get(1) {
+                frame_score += b2;
+            }
+        } else {
+            if let Some(roll2) = rolls.pop_front() {
+                frame_score += roll2;
+
+                if roll1 + roll2 == MAX_ROLL_SCORE {
+                    if let Some(b1) = rolls.get(0) {
+                        frame_score += b1;
+                    }
+
+                    if let Some(roll3) = rolls.get(0) {
+                        frame_score += roll3;
+                    }
+                }
+            }
+        }
+    }
+
+    frame_score
+}
+
+fn calculate_score_regular_frame(rolls: &mut VecDeque<i32>) -> i32 {
+    let mut frame_score: i32 = 0;
+
+    if let Some(roll1) = rolls.pop_front() {
+        frame_score += roll1;
+
+        if roll1 == MAX_ROLL_SCORE {
+            if let Some(b1) = rolls.get(0) {
+                frame_score += b1;
+            }
+
+            if let Some(b2) = rolls.get(1) {
+                frame_score += b2;
+            }
+        } else {
+            if let Some(roll2) = rolls.pop_front() {
+                frame_score += roll2;
+
+                if roll1 + roll2 == MAX_ROLL_SCORE {
+                    if let Some(b1) = rolls.get(0) {
+                        frame_score += b1;
+                    }
+                }
+            }
+        }
+    }
+
+    frame_score
 }
 
 fn roll_ball(max: i32) -> i32 {
     // The min-max of a bowling roll score
-    let roll_range = 0..=max;
+    let roll_range = MIN_ROLL_SCORE..=max;
 
     // Generate random number in the range
     rand::thread_rng().gen_range(roll_range)
@@ -70,7 +139,7 @@ fn roll_last_frame() -> Vec<i32> {
     if first_roll == MAX_ROLL_SCORE {
         // Roll the next two bonus balls and add them to the list of rolls
         let second_roll = roll_ball(MAX_ROLL_SCORE);
-        let third_roll = roll_ball(MAX_ROLL_SCORE - second_roll);
+        let third_roll = roll_ball(MAX_ROLL_SCORE - second_roll + MIN_ROLL_SCORE);
 
         rolls.push(second_roll);
         rolls.push(third_roll);
@@ -80,7 +149,7 @@ fn roll_last_frame() -> Vec<i32> {
         // Roll the second ball and if the sum of the first two scores is the
         // max, then we should let the player roll one more time, otherwise,
         // they cannot roll anymore
-        let second_roll = roll_ball(MAX_ROLL_SCORE - first_roll);
+        let second_roll = roll_ball(MAX_ROLL_SCORE - first_roll + MIN_ROLL_SCORE);
 
         rolls.push(second_roll);
 
@@ -110,7 +179,19 @@ fn roll_regular_frame() -> Vec<i32> {
     }
 
     // Append the second roll to the list
-    rolls.push(roll_ball(MAX_ROLL_SCORE - first_roll));
+    rolls.push(roll_ball(MAX_ROLL_SCORE - first_roll + MIN_ROLL_SCORE));
 
     return rolls;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_score() {
+        let rolls = [10, 7, 3, 2, 1, 7, 3, 4, 6, 2, 6, 0, 10, 8, 0, 4, 1, 10, 9, 1];
+
+        assert_eq!(calculate_score(&mut VecDeque::from_iter(rolls)), 120);
+    }
 }
