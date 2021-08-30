@@ -50,14 +50,18 @@ fn roll_ball(max: i32) -> i32 {
 }
 
 fn roll_frame(frame_number: i32) -> Vec<i32> {
+    if frame_number > MAX_FRAMES_PER_GAME {
+        panic!("{}", "Cannot bowl passed the final frame of the game.")
+    }
+
     if frame_number == MAX_FRAMES_PER_GAME {
-        roll_frame_ten()
+        roll_last_frame()
     } else {
-        roll_other_frame()
+        roll_regular_frame()
     }
 }
 
-fn roll_frame_ten() -> Vec<i32> {
+fn roll_last_frame() -> Vec<i32> {
     // A list to keep trqack of the rolls for the frame
     let mut rolls: Vec<i32> = vec![];
 
@@ -95,7 +99,7 @@ fn roll_frame_ten() -> Vec<i32> {
     }
 }
 
-fn roll_other_frame() -> Vec<i32> {
+fn roll_regular_frame() -> Vec<i32> {
     // A list to keep track of the rolls for the frame
     let mut rolls: Vec<i32> = vec![];
 
