@@ -4,7 +4,6 @@ use std::iter::FromIterator;
 
 const MAX_FRAMES_PER_GAME: i32 = 10;
 const MAX_ROLL_SCORE: i32 = 10;
-const MIN_ROLL_SCORE: i32 = 0;
 
 fn main() {
     // The rolls of a single player in a game
@@ -95,7 +94,7 @@ fn calculate_score_for_frame(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
 
 fn roll_ball(max: i32) -> i32 {
     // The min-max of a bowling roll score
-    let roll_range = MIN_ROLL_SCORE..=max;
+    let roll_range = 0..=max;
 
     // Generate random number in the range
     rand::thread_rng().gen_range(roll_range)
@@ -127,7 +126,7 @@ fn roll_last_frame() -> Vec<i32> {
     if first_roll == MAX_ROLL_SCORE {
         // Roll the next two bonus balls and add them to the list of rolls
         let second_roll = roll_ball(MAX_ROLL_SCORE);
-        let third_roll = roll_ball(MAX_ROLL_SCORE - second_roll + MIN_ROLL_SCORE);
+        let third_roll = roll_ball(MAX_ROLL_SCORE - second_roll);
 
         rolls.push(second_roll);
         rolls.push(third_roll);
@@ -137,7 +136,7 @@ fn roll_last_frame() -> Vec<i32> {
         // Roll the second ball and if the sum of the first two scores is the
         // max, then we should let the player roll one more time, otherwise,
         // they cannot roll anymore
-        let second_roll = roll_ball(MAX_ROLL_SCORE - first_roll + MIN_ROLL_SCORE);
+        let second_roll = roll_ball(MAX_ROLL_SCORE - first_roll);
 
         rolls.push(second_roll);
 
@@ -167,7 +166,7 @@ fn roll_regular_frame() -> Vec<i32> {
     }
 
     // Append the second roll to the list
-    rolls.push(roll_ball(MAX_ROLL_SCORE - first_roll + MIN_ROLL_SCORE));
+    rolls.push(roll_ball(MAX_ROLL_SCORE - first_roll));
 
     return rolls;
 }
