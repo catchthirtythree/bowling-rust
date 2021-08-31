@@ -28,10 +28,20 @@ fn main() {
     }
 
     println!("Frame 5 score: {}",
-        calculate_frame_score(5, &mut VecDeque::from_iter(rolls.clone())));
+        calculate_score_to_frame(5, &mut VecDeque::from_iter(rolls.clone())));
 }
 
-fn calculate_frame_score(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
+fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
+    let mut current_score: i32 = 0;
+
+    for current_frame in 1..=MAX_FRAMES_PER_GAME {
+        current_score += calculate_score_for_frame(current_frame, rolls);
+    }
+
+    current_score
+}
+
+fn calculate_score_to_frame(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
     let mut current_score: i32 = 0;
 
     for current_frame in 1..=MAX_FRAMES_PER_GAME {
@@ -40,16 +50,6 @@ fn calculate_frame_score(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
         if current_frame == frame {
             break
         }
-    }
-
-    current_score
-}
-
-fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
-    let mut current_score: i32 = 0;
-
-    for current_frame in 1..=MAX_FRAMES_PER_GAME {
-        current_score += calculate_score_for_frame(current_frame, rolls);
     }
 
     current_score
@@ -177,10 +177,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_calculate_frame_score_135() {
+    fn test_calculate_score_to_frame_135() {
         let rolls = [10, 10, 10, 10, 10, 6, 3];
 
-        assert_eq!(calculate_frame_score(5, &mut VecDeque::from_iter(rolls)), 135);
+        assert_eq!(calculate_score_to_frame(5, &mut VecDeque::from_iter(rolls)), 135);
     }
 
     #[test]
