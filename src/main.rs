@@ -4,30 +4,59 @@ use std::iter::FromIterator;
 
 const MAX_FRAMES_PER_GAME: i32 = 10;
 const MAX_ROLL_SCORE: i32 = 10;
+const NUMBER_OF_PLAYERS: usize = 4;
+
+#[derive(Clone)]
+struct Player(Vec<i32>);
+
+impl Default for Player {
+    fn default() -> Player {
+        Player(vec![])
+    }
+}
 
 fn main() {
-    // The rolls of a single player in a game
-    let mut rolls: Vec<i32> = vec![];
+    // Create players to bowl together
+    let mut players = vec![Player::default(); NUMBER_OF_PLAYERS];
 
-    // Roll for 10 frames
+    // Bowl for the max number of frames
     for frame_number in 1..=MAX_FRAMES_PER_GAME {
-        // Roll for a frame and get the score(s)
-        let frame_roll_scores: Vec<i32> = roll_frame(frame_number);
+        // Iterate over a mutable list of players
+        for player in players.iter_mut() {
+            // Roll for a frame and get the score(s)
+            let frame_roll_scores: Vec<i32> = roll_frame(frame_number);
 
-        // Append the frame roll score(s) to the list of rolls
-        rolls.append(&mut frame_roll_scores.clone());
+            // Append the frame roll score(s) to the list of rolls
+            player.0.append(&mut frame_roll_scores.clone());
 
-        // Get the current score for the player
-        let current_score = calculate_score(
-            &mut VecDeque::from_iter(rolls.clone()));
+            // Get the current score for the player
+            let current_score = calculate_score(
+                &mut VecDeque::from_iter(player.0.clone()));
 
-        // Display the frame stats
-        println!("Frame: {:2}, Rolls: {:2?}, Score: {}",
-            frame_number, frame_roll_scores, current_score);
+            // Display the frame stats
+            println!("Frame: {:2}, Rolls: {:2?}, Score: {}",
+                frame_number, frame_roll_scores, current_score);
+        }
     }
 
-    println!("Frame 5 score: {}",
-        calculate_score_to_frame(5, &mut VecDeque::from_iter(rolls.clone())));
+    println!();
+
+    // Print the final scores of each frame for each player
+    for (index, player) in players.iter().enumerate() {
+        println!("Player {}", index);
+
+        for frame_number in 1..=MAX_FRAMES_PER_GAME {
+            let frame_score = calculate_score_to_frame(frame_number,
+                &mut VecDeque::from_iter(player.0.clone()));
+
+            print!("{} ", frame_score);
+        }
+
+        if index < players.len() - 1 {
+            println!();
+            println!();
+        }
+    }
 }
 
 fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
