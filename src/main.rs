@@ -2,12 +2,12 @@ use rand::Rng;
 use std::collections::VecDeque;
 use std::iter::FromIterator;
 
-const MAX_FRAMES_PER_GAME: i32 = 10;
-const MAX_ROLL_SCORE: i32 = 10;
+const MAX_FRAMES_PER_GAME: u32 = 10;
+const MAX_ROLL_SCORE: u32 = 10;
 const NUMBER_OF_PLAYERS: usize = 4;
 
 #[derive(Clone)]
-struct Player(Vec<i32>);
+struct Player(Vec<u32>);
 
 impl Default for Player {
     fn default() -> Player {
@@ -24,7 +24,7 @@ fn main() {
         // Iterate over a mutable list of players
         for player in players.iter_mut() {
             // Roll for a frame and get the score(s)
-            let frame_roll_scores: Vec<i32> = roll_frame(frame_number);
+            let frame_roll_scores: Vec<u32> = roll_frame(frame_number);
 
             // Append the frame roll score(s) to the list of rolls
             player.0.append(&mut frame_roll_scores.clone());
@@ -59,8 +59,8 @@ fn main() {
     }
 }
 
-fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
-    let mut current_score: i32 = 0;
+fn calculate_score(rolls: &mut VecDeque<u32>) -> u32 {
+    let mut current_score: u32 = 0;
 
     for current_frame in 1..=MAX_FRAMES_PER_GAME {
         current_score += calculate_score_for_frame(current_frame, rolls);
@@ -69,8 +69,8 @@ fn calculate_score(rolls: &mut VecDeque<i32>) -> i32 {
     current_score
 }
 
-fn calculate_score_to_frame(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
-    let mut current_score: i32 = 0;
+fn calculate_score_to_frame(frame: u32, rolls: &mut VecDeque<u32>) -> u32 {
+    let mut current_score: u32 = 0;
 
     for current_frame in 1..=MAX_FRAMES_PER_GAME {
         current_score += calculate_score_for_frame(current_frame, rolls);
@@ -83,8 +83,8 @@ fn calculate_score_to_frame(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
     current_score
 }
 
-fn calculate_score_for_frame(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
-    let mut frame_score: i32 = 0;
+fn calculate_score_for_frame(frame: u32, rolls: &mut VecDeque<u32>) -> u32 {
+    let mut frame_score: u32 = 0;
 
     if let Some(roll1) = rolls.pop_front() {
         frame_score += roll1;
@@ -121,7 +121,7 @@ fn calculate_score_for_frame(frame: i32, rolls: &mut VecDeque<i32>) -> i32 {
     frame_score
 }
 
-fn roll_ball(max: i32) -> i32 {
+fn roll_ball(max: u32) -> u32 {
     // The min-max of a bowling roll score
     let roll_range = 0..=max;
 
@@ -129,7 +129,7 @@ fn roll_ball(max: i32) -> i32 {
     rand::thread_rng().gen_range(roll_range)
 }
 
-fn roll_frame(frame_number: i32) -> Vec<i32> {
+fn roll_frame(frame_number: u32) -> Vec<u32> {
     if frame_number > MAX_FRAMES_PER_GAME {
         panic!("{}", "Cannot bowl passed the final frame of the game.")
     }
@@ -141,12 +141,12 @@ fn roll_frame(frame_number: i32) -> Vec<i32> {
     }
 }
 
-fn roll_last_frame() -> Vec<i32> {
+fn roll_last_frame() -> Vec<u32> {
     // A list to keep trqack of the rolls for the frame
-    let mut rolls: Vec<i32> = vec![];
+    let mut rolls: Vec<u32> = vec![];
 
     // Roll the first ball in the frame
-    let first_roll: i32 = roll_ball(MAX_ROLL_SCORE);
+    let first_roll: u32 = roll_ball(MAX_ROLL_SCORE);
 
     // Append the first roll to the list of rolls
     rolls.push(first_roll);
@@ -179,9 +179,9 @@ fn roll_last_frame() -> Vec<i32> {
     }
 }
 
-fn roll_regular_frame() -> Vec<i32> {
+fn roll_regular_frame() -> Vec<u32> {
     // A list to keep track of the rolls for the frame
-    let mut rolls: Vec<i32> = vec![];
+    let mut rolls: Vec<u32> = vec![];
 
     // Roll the first ball in the frame
     let first_roll = roll_ball(MAX_ROLL_SCORE);
