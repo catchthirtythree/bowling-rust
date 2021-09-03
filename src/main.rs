@@ -12,7 +12,8 @@ fn main() {
     let mut game = Game::new(players);
 
     game.simulate_game();
-    game.show_scores();
+    // game.show_scores_per_frame();
+    game.show_scores_per_player();
 }
 
 // fn calculate_score(rolls: &mut VecDeque<u32>) -> u32 {

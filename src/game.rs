@@ -15,11 +15,33 @@ impl Game {
         }
     }
 
-    pub fn show_scores(&self) {
-        for player in self.players.iter() {
+    pub fn show_scores_per_frame(&self) {
+        for frame in 1..=Game::MAX_FRAMES_PER_GAME as usize {
+            let frame_number = frame - 1;
+
+            for (p_idx, player) in self.players.iter().enumerate() {
+                match player.0.get(frame_number) {
+                    Some(f) => {
+                        println!("Player {}, Frame {} => {:?}",
+                            p_idx + 1, f.frame, f.rolls)
+                    },
+                    _ => continue
+                }
+            }
+        }
+
+        // @TODO Show the final scores for each player
+    }
+
+    pub fn show_scores_per_player(&self) {
+        for (idx, player) in self.players.iter().enumerate() {
+            println!("Player {} Frame Scores", idx);
+
             for frame in player.0.iter() {
                 println!("{:?}", frame);
             }
+
+            // @TODO Show the player's final score
         }
     }
 

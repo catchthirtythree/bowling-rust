@@ -3,8 +3,8 @@ use rand::Rng;
 
 #[derive(Clone, Debug)]
 pub struct Frame {
-    frame: u32,
-    rolls: Vec<u32>,
+    pub frame: u32,
+    pub rolls: Vec<u32>,
 }
 
 impl Frame {
