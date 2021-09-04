@@ -54,4 +54,11 @@ mod tests {
         player.add_frame(vec![10]);
         player.add_frame(vec![10]);
     }
+
+    #[test]
+    fn test_default() {
+        let player = Player::default();
+
+        assert_eq!(player.0.len(), 0);
+    }
 }
