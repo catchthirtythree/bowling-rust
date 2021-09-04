@@ -22,3 +22,36 @@ impl Default for Player {
         Player(vec![])
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add_frame() {
+        let mut player = Player::default();
+
+        player.add_frame(vec![10]);
+
+        assert_eq!(player.0[0].number, 1);
+        assert_eq!(player.0[0].rolls, vec![10]);
+    }
+
+    #[test]
+    #[should_panic(expected = "This player has already played a full game.")]
+    fn test_add_too_many_frames() {
+        let mut player = Player::default();
+
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+    }
+}
