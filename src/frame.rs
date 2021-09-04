@@ -3,14 +3,14 @@ use rand::Rng;
 
 #[derive(Clone, Debug)]
 pub struct Frame {
-    pub frame: u32,
+    pub number: usize,
     pub rolls: Vec<u32>,
 }
 
 impl Frame {
-    pub fn new(frame: u32) -> Frame {
+    pub fn new(number: usize) -> Frame {
         Frame {
-            frame,
+            number,
             rolls: vec![],
         }
     }
@@ -18,7 +18,7 @@ impl Frame {
     pub fn roll_frame(&mut self) {
         let roll1 = self.roll(Game::MAX_ROLL_SCORE);
         if roll1 == Game::MAX_ROLL_SCORE {
-            if self.frame == Game::MAX_FRAMES_PER_GAME {
+            if self.number == Game::MAX_FRAMES_PER_GAME {
                 let roll2 = self.roll(Game::MAX_ROLL_SCORE);
                 if roll2 == Game::MAX_ROLL_SCORE {
                     self.roll(Game::MAX_ROLL_SCORE);
@@ -28,7 +28,7 @@ impl Frame {
             }
         } else {
             let roll2 = self.roll(Game::MAX_ROLL_SCORE - roll1);
-            if self.frame == Game::MAX_FRAMES_PER_GAME {
+            if self.number == Game::MAX_FRAMES_PER_GAME {
                 if (roll1 + roll2) == Game::MAX_ROLL_SCORE {
                     self.roll(Game::MAX_ROLL_SCORE);
                 }

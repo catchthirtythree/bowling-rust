@@ -1,6 +1,7 @@
 mod frame;
 mod game;
 mod player;
+mod scoring;
 
 use crate::game::Game;
 use crate::player::Player;
@@ -15,68 +16,6 @@ fn main() {
     // game.show_scores_per_frame();
     game.show_scores_per_player();
 }
-
-// fn calculate_score(rolls: &mut VecDeque<u32>) -> u32 {
-//     let mut current_score: u32 = 0;
-
-//     for current_frame in 1..=MAX_FRAMES_PER_GAME {
-//         current_score += calculate_score_for_frame(current_frame, rolls);
-//     }
-
-//     current_score
-// }
-
-// fn calculate_score_to_frame(frame: u32, rolls: &mut VecDeque<u32>) -> u32 {
-//     let mut current_score: u32 = 0;
-
-//     for current_frame in 1..=MAX_FRAMES_PER_GAME {
-//         current_score += calculate_score_for_frame(current_frame, rolls);
-
-//         if current_frame == frame {
-//             break
-//         }
-//     }
-
-//     current_score
-// }
-
-// fn calculate_score_for_frame(frame: u32, rolls: &mut VecDeque<u32>) -> u32 {
-//     let mut frame_score: u32 = 0;
-
-//     if let Some(roll1) = rolls.pop_front() {
-//         frame_score += roll1;
-
-//         if roll1 == MAX_ROLL_SCORE {
-//             if let Some(b1) = rolls.get(0) {
-//                 frame_score += b1;
-//             }
-
-//             if let Some(b2) = rolls.get(1) {
-//                 frame_score += b2;
-//             }
-//         } else {
-//             if let Some(roll2) = rolls.pop_front() {
-//                 frame_score += roll2;
-
-//                 if roll1 + roll2 == MAX_ROLL_SCORE {
-//                     if let Some(b1) = rolls.get(0) {
-//                         frame_score += b1;
-//                     }
-
-//                     // In the final frame, a spare will warrant an extra
-//                     // roll for the player
-//                     if frame == MAX_FRAMES_PER_GAME {
-//                         if let Some(roll3) = rolls.get(0) {
-//                             frame_score += roll3;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     frame_score
-// }
 
 #[cfg(test)]
 mod tests {

@@ -1,12 +1,13 @@
 use crate::frame::Frame;
 use crate::player::Player;
+use crate::scoring::Scoring;
 
 pub struct Game {
     players: Vec<Player>,
 }
 
 impl Game {
-    pub const MAX_FRAMES_PER_GAME: u32 = 10;
+    pub const MAX_FRAMES_PER_GAME: usize = 10;
     pub const MAX_ROLL_SCORE: u32 = 10;
 
     pub fn new(players: Vec<Player>) -> Game {
@@ -23,25 +24,31 @@ impl Game {
                 match player.0.get(frame_number) {
                     Some(f) => {
                         println!("Player {}, Frame {} => {:?}",
-                            p_idx + 1, f.frame, f.rolls)
+                            p_idx + 1, f.number, f.rolls)
                     },
                     _ => continue
                 }
             }
         }
 
-        // @TODO Show the final scores for each player
+        println!();
+
+        for (p_idx, player) in self.players.iter().enumerate() {
+            println!("Player {}, Final Score => {}",
+                p_idx + 1, Scoring::score_frames(&player.0));
+        }
     }
 
     pub fn show_scores_per_player(&self) {
         for (idx, player) in self.players.iter().enumerate() {
-            println!("Player {} Frame Scores", idx);
+            println!("Player {} Frame Scores", idx + 1);
 
             for frame in player.0.iter() {
                 println!("{:?}", frame);
             }
 
-            // @TODO Show the player's final score
+            println!("Player {}, Final Score => {}",
+                idx + 1, Scoring::score_frames(&player.0));
         }
     }
 
