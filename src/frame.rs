@@ -8,39 +8,40 @@ pub struct Frame {
 }
 
 impl Frame {
-    pub fn new(number: usize) -> Frame {
-        Frame {
-            number,
-            rolls: vec![],
-        }
+    pub fn new(number: usize, rolls: Vec<u32>) -> Frame {
+        Frame { number, rolls }
     }
 
-    pub fn roll_frame(&mut self) {
-        let roll1 = self.roll(Game::MAX_ROLL_SCORE);
+    pub fn roll_frame(number: usize) -> Frame {
+        let mut rolls = vec![];
+
+        let roll1 = Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
         if roll1 == Game::MAX_ROLL_SCORE {
-            if self.number == Game::MAX_FRAMES_PER_GAME {
-                let roll2 = self.roll(Game::MAX_ROLL_SCORE);
+            if number == Game::MAX_FRAMES_PER_GAME {
+                let roll2 = Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
                 if roll2 == Game::MAX_ROLL_SCORE {
-                    self.roll(Game::MAX_ROLL_SCORE);
+                    Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
                 } else {
-                    self.roll(Game::MAX_ROLL_SCORE - roll2);
+                    Frame::roll(Game::MAX_ROLL_SCORE - roll2, &mut rolls);
                 }
             }
         } else {
-            let roll2 = self.roll(Game::MAX_ROLL_SCORE - roll1);
-            if self.number == Game::MAX_FRAMES_PER_GAME {
+            let roll2 = Frame::roll(Game::MAX_ROLL_SCORE - roll1, &mut rolls);
+            if number == Game::MAX_FRAMES_PER_GAME {
                 if (roll1 + roll2) == Game::MAX_ROLL_SCORE {
-                    self.roll(Game::MAX_ROLL_SCORE);
+                    Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
                 }
             }
         }
+
+        Frame::new(number, rolls)
     }
 
-    fn roll(&mut self, max: u32) -> u32 {
+    fn roll(max: u32, rolls: &mut Vec<u32>) -> u32 {
         let mut rng = rand::thread_rng();
         let score = rng.gen_range(0..=max);
 
-        self.rolls.push(score);
+        rolls.push(score);
 
         score
     }

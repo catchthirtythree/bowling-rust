@@ -55,10 +55,7 @@ impl Game {
     pub fn simulate_game(&mut self) {
         for current_frame in 1..=Game::MAX_FRAMES_PER_GAME {
             for player in self.players.iter_mut() {
-                let mut frame = Frame::new(current_frame);
-
-                frame.roll_frame();
-                player.0.push(frame);
+                player.0.push(Frame::roll_frame(current_frame));
             }
         }
     }
