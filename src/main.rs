@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 mod frame;
 mod game;
 mod player;

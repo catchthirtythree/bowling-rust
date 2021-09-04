@@ -62,71 +62,73 @@ impl Scoring {
 mod tests {
     use super::*;
 
+    use crate::player::Player;
+
     #[test]
     fn test_calculate_score_to_frame_144() {
-        let frames = vec![
-            Frame::new(1, vec![10]),
-            Frame::new(2, vec![10]),
-            Frame::new(3, vec![10]),
-            Frame::new(4, vec![10]),
-            Frame::new(5, vec![10]),
-            Frame::new(6, vec![6, 3])
-        ];
+        let mut player = Player::default();
 
-        assert_eq!(Scoring::score_frames(&frames), 144);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![6, 3]);
+
+        assert_eq!(Scoring::score_frames(&player.0), 144);
     }
 
     #[test]
     fn test_calculate_score_120_game() {
-        let frames = vec![
-            Frame::new(1, vec![10]),
-            Frame::new(2, vec![7, 3]),
-            Frame::new(3, vec![2, 1]),
-            Frame::new(4, vec![7, 3]),
-            Frame::new(5, vec![4, 6]),
-            Frame::new(6, vec![2, 6]),
-            Frame::new(7, vec![0, 10]),
-            Frame::new(8, vec![8, 0]),
-            Frame::new(9, vec![4, 1]),
-            Frame::new(10, vec![10, 9, 1])
-        ];
+        let mut player = Player::default();
 
-        assert_eq!(Scoring::score_frames(&frames), 120);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![2, 1]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![4, 6]);
+        player.add_frame(vec![2, 6]);
+        player.add_frame(vec![0, 10]);
+        player.add_frame(vec![8, 0]);
+        player.add_frame(vec![4, 1]);
+        player.add_frame(vec![10, 9, 1]);
+
+        assert_eq!(Scoring::score_frames(&player.0), 120);
     }
 
     #[test]
     fn test_calculate_score_170_game() {
-        let frames = vec![
-            Frame::new(1, vec![7, 3]),
-            Frame::new(2, vec![7, 3]),
-            Frame::new(3, vec![7, 3]),
-            Frame::new(4, vec![7, 3]),
-            Frame::new(5, vec![7, 3]),
-            Frame::new(6, vec![7, 3]),
-            Frame::new(7, vec![7, 3]),
-            Frame::new(8, vec![7, 3]),
-            Frame::new(9, vec![7, 3]),
-            Frame::new(10, vec![7, 3, 7])
-        ];
+        let mut player = Player::default();
 
-        assert_eq!(Scoring::score_frames(&frames), 170);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3]);
+        player.add_frame(vec![7, 3, 7]);
+
+        assert_eq!(Scoring::score_frames(&player.0), 170);
     }
 
     #[test]
     fn test_calculate_score_perfect_game() {
-        let frames = vec![
-            Frame::new(1, vec![10]),
-            Frame::new(2, vec![10]),
-            Frame::new(3, vec![10]),
-            Frame::new(4, vec![10]),
-            Frame::new(5, vec![10]),
-            Frame::new(6, vec![10]),
-            Frame::new(7, vec![10]),
-            Frame::new(8, vec![10]),
-            Frame::new(9, vec![10]),
-            Frame::new(10, vec![10, 10, 10])
-        ];
+        let mut player = Player::default();
 
-        assert_eq!(Scoring::score_frames(&frames), 300);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10]);
+        player.add_frame(vec![10, 10, 10]);
+
+        assert_eq!(Scoring::score_frames(&player.0), 300);
     }
 }
