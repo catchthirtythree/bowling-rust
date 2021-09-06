@@ -1,61 +1,99 @@
-use crate::frame::Frame;
 use crate::player::Player;
-use crate::scoring::Scoring;
 
+#[derive(Debug, PartialEq)]
+pub enum GameState {
+    /// Waiting for players to join
+    Starting,
+
+    /// Game has started; holds the current player index
+    Playing(usize),
+
+    /// Game has a resolution
+    Done,
+}
+
+#[derive(Debug)]
+pub enum GameError {
+    /// Triggered when trying to start/restart an already started game
+    AlreadyStarted,
+
+    /// Triggered when trying to start a game with zero players
+    NotEnoughPlayers,
+}
+
+#[derive(Debug)]
 pub struct Game {
-    players: Vec<Player>,
+    pub state: GameState,
+    pub players: Vec<Player>
 }
 
 impl Game {
-    pub const MAX_FRAMES_PER_GAME: usize = 10;
-    pub const MAX_ROLL_SCORE: u32 = 10;
-
-    pub fn new(players: Vec<Player>) -> Game {
+    pub fn new() -> Game {
         Game {
-            players,
+            state: GameState::Starting,
+            players: vec![]
         }
     }
 
-    pub fn show_scores_per_frame(&self) {
-        for frame in 1..=Game::MAX_FRAMES_PER_GAME as usize {
-            let frame_number = frame - 1;
+    pub fn add_player(&mut self, name: String) {
+        self.players.push(Player::new(name));
+    }
 
-            for (p_idx, player) in self.players.iter().enumerate() {
-                match player.0.get(frame_number) {
-                    Some(f) => {
-                        println!("Player {}, Frame {} => {:?}",
-                            p_idx + 1, f.number, f.rolls)
-                    },
-                    _ => continue
+    pub fn play(&mut self) {
+        match self.state {
+            GameState::Starting => {
+                println!("Starting game.");
+                self.state = GameState::Playing(0);
+            },
+
+            GameState::Playing(idx) => {
+                let player_number = idx + 1;
+
+                let num_players = self.players.len();
+                let player = self.players.get_mut(idx).unwrap();
+
+                player.roll();
+
+                let is_last_player = (player_number) == num_players;
+                if is_last_player && player.is_finished_game() {
+                    println!("Game is finished.");
+                    self.state = GameState::Done;
+                } else if player.is_finished_turn() {
+                    println!("Changing player.");
+                    self.state = GameState::Playing(player_number % num_players)
                 }
+            },
+
+            GameState::Done => {
+                println!("Game is finished.");
             }
-        }
-
-        println!();
-
-        for (p_idx, player) in self.players.iter().enumerate() {
-            println!("Player {}, Final Score => {}",
-                p_idx + 1, Scoring::score_frames(&player.0));
         }
     }
 
-    pub fn show_scores_per_player(&self) {
-        for (idx, player) in self.players.iter().enumerate() {
-            println!("Player {} Frame Scores", idx + 1);
+    pub fn start(&mut self) -> Result<(), GameError> {
+        match self.state {
+            GameState::Starting => {
+                if self.players.is_empty() {
+                    Err(GameError::NotEnoughPlayers)
+                } else {
+                    Ok(())
+                }
+            },
 
-            for frame in player.0.iter() {
-                println!("{:?}", frame);
-            }
+            GameState::Playing(_) => {
+                Err(GameError::AlreadyStarted)
+            },
 
-            println!("Player {}, Final Score => {}",
-                idx + 1, Scoring::score_frames(&player.0));
-        }
-    }
+            GameState::Done => {
+                println!("Restarting game.");
 
-    pub fn simulate_game(&mut self) {
-        for current_frame in 1..=Game::MAX_FRAMES_PER_GAME {
-            for player in self.players.iter_mut() {
-                player.0.push(Frame::roll_frame(current_frame));
+                self.state = GameState::Playing(0);
+
+                for player in self.players.iter_mut() {
+                    player.reset();
+                }
+
+                Ok(())
             }
         }
     }

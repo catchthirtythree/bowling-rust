@@ -1,48 +1,111 @@
-use crate::game::Game;
+use crate::{MAX_FRAMES_PER_GAME, MAX_ROLL_SCORE};
 use rand::Rng;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Frame {
     pub number: usize,
-    pub rolls: Vec<u32>,
+    pub rolls: Vec<u32>
 }
 
 impl Frame {
-    pub fn new(number: usize, rolls: Vec<u32>) -> Frame {
-        Frame { number, rolls }
-    }
-
-    pub fn roll_frame(number: usize) -> Frame {
-        let mut rolls = vec![];
-
-        let roll1 = Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
-        if roll1 == Game::MAX_ROLL_SCORE {
-            if number == Game::MAX_FRAMES_PER_GAME {
-                let roll2 = Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
-                if roll2 == Game::MAX_ROLL_SCORE {
-                    Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
-                } else {
-                    Frame::roll(Game::MAX_ROLL_SCORE - roll2, &mut rolls);
-                }
-            }
-        } else {
-            let roll2 = Frame::roll(Game::MAX_ROLL_SCORE - roll1, &mut rolls);
-            if number == Game::MAX_FRAMES_PER_GAME {
-                if (roll1 + roll2) == Game::MAX_ROLL_SCORE {
-                    Frame::roll(Game::MAX_ROLL_SCORE, &mut rolls);
-                }
-            }
+    pub fn new(number: usize) -> Frame {
+        Frame {
+            number,
+            rolls: vec![]
         }
-
-        Frame::new(number, rolls)
     }
 
-    fn roll(max: u32, rolls: &mut Vec<u32>) -> u32 {
+    pub fn is_finished(&self) -> bool {
+        if self.number == MAX_FRAMES_PER_GAME {
+            self.is_finished_last_frame()
+        } else {
+            self.is_finished_regular_frame()
+        }
+    }
+
+    fn is_finished_regular_frame(&self) -> bool {
+        match self.rolls.len() {
+            0 => false,
+            1 => self.rolls[0] == MAX_ROLL_SCORE,
+            2 => true,
+            _ => panic!("More than 2 rolls in a regular frame??")
+        }
+    }
+
+    fn is_finished_last_frame(&self) -> bool {
+        match self.rolls.len() {
+            0 => false,
+            1 => false,
+            2 => {
+                let has_no_strike = self.rolls[0] != MAX_ROLL_SCORE;
+                let has_no_spare = (self.rolls[0] + self.rolls[1]) != MAX_ROLL_SCORE;
+
+                has_no_strike && has_no_spare
+            },
+            3 => true,
+            _ => panic!("More than 3 rolls in a final frame??")
+        }
+    }
+
+    pub fn roll(&mut self) {
+        if self.number == MAX_FRAMES_PER_GAME {
+            self.roll_last_frame()
+        } else {
+            self.roll_regular_frame()
+        }
+    }
+
+    fn roll_regular_frame(&mut self) {
         let mut rng = rand::thread_rng();
-        let score = rng.gen_range(0..=max);
 
-        rolls.push(score);
+        match self.rolls.len() {
+            0 => {
+                let roll = rng.gen_range(0..=MAX_ROLL_SCORE);
+                self.rolls.push(roll);
+            },
 
-        score
+            1 => {
+                let score = self.rolls.iter().fold(0, |acc, next| acc + next);
+
+                assert!(score != MAX_ROLL_SCORE);
+
+                let roll = rng.gen_range(0..=(MAX_ROLL_SCORE - score));
+                self.rolls.push(roll);
+            },
+
+            _ => panic!("No.")
+        }
+    }
+
+    fn roll_last_frame(&mut self) {
+        let mut rng = rand::thread_rng();
+
+        match self.rolls.len() {
+            0 => {
+                let roll = rng.gen_range(0..=MAX_ROLL_SCORE);
+                self.rolls.push(roll);
+            },
+
+            1 => {
+                let score = self.rolls.iter().fold(0, |acc, next| acc + next);
+                if score == MAX_ROLL_SCORE {
+                    let roll = rng.gen_range(0..=MAX_ROLL_SCORE);
+                    self.rolls.push(roll);
+                } else {
+                    let roll = rng.gen_range(0..=(MAX_ROLL_SCORE - score));
+                    self.rolls.push(roll);
+                }
+            },
+
+            2 => {
+                let score = self.rolls.iter().fold(0, |acc, next| acc + next);
+                if score >= MAX_ROLL_SCORE {
+                    let roll = rng.gen_range(0..=MAX_ROLL_SCORE);
+                    self.rolls.push(roll);
+                }
+            },
+
+            _ => panic!("No.")
+        }
     }
 }
